@@ -5,6 +5,7 @@ import BillsCast from './components/BillsCast';
 
 export default function App() {
   const [ bills, setBills ] = useState([])
+  
   console.log(bills)
   
   useEffect(() => {
@@ -13,16 +14,45 @@ export default function App() {
     .then(data => setBills(data))
   }, [])
 
-  function addToCast(id) {
-    console.log(id);
+  function addToCastPATCH(bill) {
+    const castBill = {
+      ...bill, cast: true
+    }
+    fetch(`http://localhost:8002/bills/${bill.id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(castBill)
+    })
+    .then(resp => resp.json())
+    .then(data => addToCast(data.id, data.cast))
+  }
+  
+  function addToCast(id, cast) {
     setBills(
-      bills.map((bill) => bill.id === id ? {...bill, cast: true} : bill)
+      bills.map((bill) => bill.id === id ? {...bill, cast } : bill)
     )
   }
 
-  function removeFromCast(id) {
+  function removeFromCastPATCH(bill) {
+    const unCastBill ={
+      ...bill, cast: false
+    }
+    fetch(`http://localhost:8002/bills/${bill.id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(unCastBill)
+    })
+    .then(resp => resp.json())
+    .then(data => removeFromCast(data.id, data.cast))
+  }
+
+  function removeFromCast(id, cast) {
     setBills(
-      bills.map((bill) => bill.id === id ? {...bill, cast: false} : bill)
+      bills.map((bill) => bill.id === id ? {...bill, cast } : bill)
     )
   }
 
@@ -34,8 +64,8 @@ export default function App() {
 
   return (
     <div>
-      <BillsCast bills={bills.filter(bill => bill.cast)} handleClick={removeFromCast} fireBill={fireBill} />
-      <BillCollection bills={ bills } handleClick={addToCast} fireBill={fireBill} />
+      <BillsCast bills={bills.filter(bill => bill.cast)} handleClick={removeFromCastPATCH} fireBill={fireBill} />
+      <BillCollection bills={ bills } handleClick={addToCastPATCH} fireBill={fireBill} />
     </div>
   );
 }
@@ -47,4 +77,19 @@ export default function App() {
 // ---- BillCard
 // -- BillCollection
 // ---- BillCard
+
+
+// Core deliverable functionality: 
+
+  // function addToCast(id) {
+  //   setBills(
+  //     bills.map((bill) => bill.id === id ? {...bill, cast: true } : bill)
+  //   )
+  // }
+
+  // function removeFromCast(id) {
+  //   setBills(
+  //     bills.map((bill) => bill.id === id ? {...bill, cast: false} : bill)
+  //   )
+  // }
 

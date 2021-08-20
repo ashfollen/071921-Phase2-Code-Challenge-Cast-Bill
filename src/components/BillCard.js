@@ -6,7 +6,7 @@ const BillCard = ({ bill, handleClick, fireBill }) => {
       <div
         className="ui card"
         key={bill.id}
-        onClick={() => handleClick(bill.id)}
+        onClick={() => handleClick(bill)}
       >
         <div className="image">
           <img alt={bill.name} src={bill.photo} />
